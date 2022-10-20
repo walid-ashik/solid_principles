@@ -277,8 +277,8 @@ we just new to add `LocalDatabase` save type to `SaveType` enum class and we nee
 
 ```diff
 enum class SaveType {
-    -File, Server
-    +File, Server, LocalDatabase, 
+    - File, Server
+    + File, Server, LocalDatabase, 
 }
 ```
 
@@ -297,7 +297,7 @@ class InvoicePersistence() {
     fun store(invoice: Invoice): InvoiceSaver = when (invoice.saveType) {
         SaveType.File -> Server()
         SaveType.Server -> FileSystem()
-       +SaveType.LocalDatabase -> LocalDatabase()
+      + SaveType.LocalDatabase -> LocalDatabase()
     }
 }
 ```
