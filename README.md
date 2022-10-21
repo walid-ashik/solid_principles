@@ -48,7 +48,7 @@ Segregation means keeping things separated, and the Interface Segregation Princi
 **Dependency Inversion Principle**   
 Classes should depend upon **interfaces or abstract classes** instead of concrete classes and functions.
 
-## Single Responsibility Principle
+# Single Responsibility Principle
 
 **SRP** also helps to have less Merge conflict as everything will be separated and place in separated class, There will
 be less merge conflicts.
@@ -305,3 +305,103 @@ class InvoicePersistence() {
 That's all. Our `InvoicePersistence` is now capabale of saving invoice to even LocalDatabase.   
 
 Check that when we implemented new saving to database feature, we didn't, *modified any of our class* and only *added new feature change* to new class. So, there's no risk of breaking other parts of the code as we almost never touched other code.
+
+
+# Liskov Substitution Principle
+**Original Theory:** 
+>Let φ(x) be a property provable about objects x of type T. Then φ(y) should be true for objects y of type S where S is a subtype of T.
+
+Hard to digest right? so, simply 
+>Super class should be replacable by it's sub classs.
+
+Let's try with a different and easy example this time. Assume that we have a `Bird` class that has common behavior of any bird like `fly()`.  
+So, In our program if we want to create any kind of `Bird` like `Parrot` our obvious choice is to extend `Bird` so that it has those bird's behavior/characteristic. Lets' see the code,   
+
+```kotlin
+class Bird {
+    fun fly() {
+        // implementation of fly
+    }
+    
+    //...
+}
+```
+
+So, if we introduce a new bird called, `Parrot` this will be the code,
+```kotlin
+class Parrot : Bird() {
+    //...
+}
+```
+And it's totally fine. But what if we need to create `Ostrich` which can not fly. So,
+if we do something like this,
+```kotlin
+class Ostrich : Bird() {
+    override fun fly() {
+        throw Exception("I can't fly :( ")
+    }
+}
+```
+
+So this is the violation of Liskov's theory. If we want to `fly()` a bird and have written our code that takes `Bird` as input then passing `Ostrich` to that break the code,
+
+```kotlin
+fun main(args: Array<String>) {
+    val parrot = Parrot()
+    val ostrich = Ostrich()
+    
+    val action = Action()
+    action.makeBirdFly(parrot) // that's fine
+    
+    action.makeBirdFly(ostrich) // oops! liskov substitution
+}
+
+class Action {
+    fun makeBirdFly(bird: Bird) {
+        bird.fly()
+    }
+}
+
+```
+
+
+# Interface Segregation Principle
+>Segregation means keeping things separated, and the Interface Segregation Principle is about separating the interfaces.
+
+Let's take the above `Bird` example. As you've seen previously how `Ostrich` bird example violated `LS` principle. We'll be solving that using `Interface Segregation Principle`.  
+
+We can say `LS` principle is the theory of a problem that we can solve using Interface Segregation.
+
+Remember, `Ostrich` can't fly so by extending `Bird` we violate `LS` principle. So to solve this we can introduce a new interface called `Flyable`
+
+```kotlin
+interface Flyable {
+    fun fly()
+}
+```
+
+Our goal is to separate the common behavior using interface for birds here. Now we'll create two kind of birds,
+
+```kotlin
+class Bird {
+    // bird characteristics & behaviors
+}
+
+class FlyingBird: Bird() , Flyable {
+    override fun fly() {
+    }
+}
+```
+So, now `Parrot` will extend `FlyingBird` which is a bird kind that also fly but `Ostrich` only extends `Bird` as it can't fly
+
+```kotlin
+class Ostrich : Bird() {
+    // it's bird that can't fly
+}
+
+class Parrot : FlyingBird() {
+    // it's a bird that can fly too
+}
+```
+
+So, we just solved `LS` problem using `ISP`. 
